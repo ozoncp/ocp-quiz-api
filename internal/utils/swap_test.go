@@ -31,8 +31,7 @@ func TestSwap(t *testing.T) {
 	}
 
 	for _, i := range data {
-		result := Swap(i.input)
-		if !reflect.DeepEqual(result, i.output) {
+		if result := Swap(i.input); !reflect.DeepEqual(result, i.output) {
 			t.Errorf("Case: %v, result: %v", i, result)
 		}
 	}
