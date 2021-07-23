@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -30,8 +29,8 @@ func TestBatchesSuccess(t *testing.T) {
 
 func TestBatchesErrors(t *testing.T) {
 	data := []testBatches{
-		{[]int{1, 2, 3, 4, 5}, 0, nil, errors.New("batch size must be less than zero")},
-		{[]int{1, 2, 3, 4, 5}, -1, nil, errors.New("batch size must be less than zero")},
+		{[]int{1, 2, 3, 4, 5}, 0, nil, ErrBatchSizeZero},
+		{[]int{1, 2, 3, 4, 5}, -1, nil, ErrBatchSizeZero},
 	}
 	for _, i := range data {
 		if result, err := Batches(i.in, i.size); err == nil && i.err != nil {

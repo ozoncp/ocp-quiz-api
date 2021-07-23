@@ -2,11 +2,13 @@ package utils
 
 import "errors"
 
+var ErrBatchSizeZero = errors.New("batch size must be more than zero")
+
 // Batches Разделение на слайса на батчи - исходный слайс конвертировать
 // в слайс слайсов - чанки одинкового размера (кроме последнего)
 func Batches(slice []int, size int) ([][]int, error) {
 	if size <= 0 {
-		return nil, errors.New("batch size must be less than zero")
+		return nil, ErrBatchSizeZero
 	}
 	result := make([][]int, 0)
 	lenSlice := len(slice)
