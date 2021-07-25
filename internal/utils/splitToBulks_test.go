@@ -2,9 +2,10 @@ package utils
 
 import (
 	"errors"
-	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"reflect"
 	"testing"
+
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
 )
 
 func TestSplitToBulks(t *testing.T) {
