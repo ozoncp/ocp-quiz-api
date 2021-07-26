@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"reflect"
 	"testing"
+
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
 )
 
 func TestSliceToMap(t *testing.T) {
