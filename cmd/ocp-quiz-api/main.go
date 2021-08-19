@@ -30,6 +30,7 @@ func FileReader(files []string) {
 		}
 	}
 }
+
 func main() {
-	fmt.Println("Hello, I am ocp-quiz-api!")
+
 }
