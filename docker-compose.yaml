@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocp-quiz
+    ports:
+      - '8081:8081'
+      - '8083:8083'

@@ -52,7 +52,7 @@ message Quiz{
 message CreateQuizV1Request{
   uint64 ClassroomId = 1 [(validate.rules).uint64.gt = 0];
   uint64  UserId = 2 [(validate.rules).uint64.gt = 0];
-  string Link = 3 [(validate.rules).uint64.gt = 0];
+  string Link = 3;
 }
 
 // Response of Create new Quiz
