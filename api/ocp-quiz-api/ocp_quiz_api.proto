@@ -21,61 +21,61 @@ service OcpQuizApiService {
   // Describe Quiz
   rpc DescribeQuiz(DescribeQuizV1Request) returns (DescribeQuizV1Response){
     option (google.api.http) = {
-      get: "/v1/quiz/{QuizId}"
+      get: "/v1/quiz/{quiz_id}"
     };
   }
 
   // Get list of Quizes
   rpc ListQuiz(ListQuizV1Request) returns (ListQuizV1Response){
     option (google.api.http) = {
-      get: "/v1/quiz/{Limit}/{Offset}"
+      get: "/v1/quiz/{limit}/{offset}"
     };
   }
 
   // Remove Quiz
   rpc RemoveQuiz(RemoveQuizV1Request) returns (RemoveQuizV1Response){
     option (google.api.http) = {
-      post: "/v1/quiz/{QuizId}"
+      post: "/v1/quiz/{quiz_id}"
       body: "*"
     };
   }
 }
 
 message Quiz{
-  uint64 Id = 1;
-  uint64 ClassroomId = 2;
-  uint64 UserId = 3;
-  string Link = 4;
+  uint64 id = 1;
+  uint64 classroom_id = 2;
+  uint64 user_id = 3;
+  string link = 4;
 }
 
 // Request of Create new Quiz
 message CreateQuizV1Request{
-  uint64 ClassroomId = 1 [(validate.rules).uint64.gt = 0];
-  uint64  UserId = 2 [(validate.rules).uint64.gt = 0];
-  string Link = 3;
+  uint64 classroom_id = 1 [(validate.rules).uint64.gt = 0];
+  uint64 user_id = 2 [(validate.rules).uint64.gt = 0];
+  string link = 3;
 }
 
 // Response of Create new Quiz
 message CreateQuizV1Response{
-  uint64 QuizId = 1;
+  uint64 quiz_id = 1;
 }
 
 // Request of Describe Quiz
 message DescribeQuizV1Request{
-  uint64 QuizId = 1 [(validate.rules).uint64.gt = 0];
+  uint64 quiz_id = 1 [(validate.rules).uint64.gt = 0];
 }
 
 // Response of Describe Quiz
 message DescribeQuizV1Response{
-  Quiz Quiz = 1;
+  Quiz quiz = 1;
 }
 
 // Request on paginate for List of Quizes
 // Limit - quizes on page
 // Offset - page number
 message ListQuizV1Request{
-  uint64 Limit = 1 [(validate.rules).uint64.gt = 1];
-  uint64 Offset = 2 [(validate.rules).uint64.gt = 1];
+  uint64 limit = 1 [(validate.rules).uint64.gt = 1];
+  uint64 offset = 2 [(validate.rules).uint64.gt = 1];
 }
 
 // Response on paginate for List of Quizes
@@ -83,18 +83,18 @@ message ListQuizV1Request{
 // CurrentPage - current page
 // IsLast - is last page?
 message  ListQuizV1Response{
-  repeated Quiz Quizes = 1;
-  uint64 CurrentPage = 2;
-  bool IsLast = 3;
+  repeated Quiz quizes = 1;
+  uint64 current_page = 2;
+  bool is_last = 3;
 }
 
 // Request on remove quiz by Id
 message RemoveQuizV1Request {
-  uint64 QuizId = 1 [(validate.rules).uint64.gte = 0];
+  uint64 quiz_id = 1 [(validate.rules).uint64.gte = 0];
 }
 
 // Response on remove quiz
 // Found - something deleted?
 message RemoveQuizV1Response {
-  bool Found = 1;
+  bool found = 1;
 }

@@ -78,15 +78,15 @@ func request_OcpQuizApiService_DescribeQuiz_0(ctx context.Context, marshaler run
 		_   = err
 	)
 
-	val, ok = pathParams["QuizId"]
+	val, ok = pathParams["quiz_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "QuizId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "quiz_id")
 	}
 
 	protoReq.QuizId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "QuizId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "quiz_id", err)
 	}
 
 	msg, err := client.DescribeQuiz(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -105,15 +105,15 @@ func local_request_OcpQuizApiService_DescribeQuiz_0(ctx context.Context, marshal
 		_   = err
 	)
 
-	val, ok = pathParams["QuizId"]
+	val, ok = pathParams["quiz_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "QuizId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "quiz_id")
 	}
 
 	protoReq.QuizId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "QuizId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "quiz_id", err)
 	}
 
 	msg, err := server.DescribeQuiz(ctx, &protoReq)
@@ -132,26 +132,26 @@ func request_OcpQuizApiService_ListQuiz_0(ctx context.Context, marshaler runtime
 		_   = err
 	)
 
-	val, ok = pathParams["Limit"]
+	val, ok = pathParams["limit"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Limit")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "limit")
 	}
 
 	protoReq.Limit, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Limit", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "limit", err)
 	}
 
-	val, ok = pathParams["Offset"]
+	val, ok = pathParams["offset"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Offset")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "offset")
 	}
 
 	protoReq.Offset, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Offset", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "offset", err)
 	}
 
 	msg, err := client.ListQuiz(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -170,26 +170,26 @@ func local_request_OcpQuizApiService_ListQuiz_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["Limit"]
+	val, ok = pathParams["limit"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Limit")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "limit")
 	}
 
 	protoReq.Limit, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Limit", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "limit", err)
 	}
 
-	val, ok = pathParams["Offset"]
+	val, ok = pathParams["offset"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Offset")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "offset")
 	}
 
 	protoReq.Offset, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Offset", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "offset", err)
 	}
 
 	msg, err := server.ListQuiz(ctx, &protoReq)
@@ -216,15 +216,15 @@ func request_OcpQuizApiService_RemoveQuiz_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["QuizId"]
+	val, ok = pathParams["quiz_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "QuizId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "quiz_id")
 	}
 
 	protoReq.QuizId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "QuizId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "quiz_id", err)
 	}
 
 	msg, err := client.RemoveQuiz(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -251,15 +251,15 @@ func local_request_OcpQuizApiService_RemoveQuiz_0(ctx context.Context, marshaler
 		_   = err
 	)
 
-	val, ok = pathParams["QuizId"]
+	val, ok = pathParams["quiz_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "QuizId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "quiz_id")
 	}
 
 	protoReq.QuizId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "QuizId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "quiz_id", err)
 	}
 
 	msg, err := server.RemoveQuiz(ctx, &protoReq)
@@ -492,11 +492,11 @@ func RegisterOcpQuizApiServiceHandlerClient(ctx context.Context, mux *runtime.Se
 var (
 	pattern_OcpQuizApiService_CreateQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "quiz"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_OcpQuizApiService_DescribeQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "quiz", "QuizId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_OcpQuizApiService_DescribeQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "quiz", "quiz_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_OcpQuizApiService_ListQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "quiz", "Limit", "Offset"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_OcpQuizApiService_ListQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "quiz", "limit", "offset"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_OcpQuizApiService_RemoveQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "quiz", "QuizId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_OcpQuizApiService_RemoveQuiz_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "quiz", "quiz_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
