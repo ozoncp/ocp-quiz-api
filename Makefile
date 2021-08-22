@@ -59,9 +59,12 @@ install-go-deps: .install-go-deps
 .PHONY: .install-go-deps
 .install-go-deps:
 		ls go.mod || go mod init
-		go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+		go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
 		go get -u github.com/golang/protobuf/proto
 		go get -u github.com/golang/protobuf/protoc-gen-go
-		go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+		go get -u google.golang.org/grpc@v1.40.0
+		go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
+		go get -u github.com/envoyproxy/protoc-gen-validate
 		go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+		go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 		go install github.com/envoyproxy/protoc-gen-validate
