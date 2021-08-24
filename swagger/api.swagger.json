@@ -1,0 +1,286 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/ocp-quiz-api/ocp_quiz_api.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/quiz": {
+      "post": {
+        "summary": "Create new Quiz",
+        "operationId": "OcpQuizApiService_CreateQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCreateQuizV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
+      }
+    },
+    "/v1/quiz/{limit}/{offset}": {
+      "get": {
+        "summary": "Get list of Quizes",
+        "operationId": "OcpQuizApiService_ListQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
+      }
+    },
+    "/v1/quiz/{quiz_id}": {
+      "get": {
+        "summary": "Describe Quiz",
+        "operationId": "OcpQuizApiService_DescribeQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDescribeQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
+      },
+      "post": {
+        "summary": "Remove Quiz",
+        "operationId": "OcpQuizApiService_RemoveQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRemoveQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiRemoveQuizV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "apiCreateQuizV1Request": {
+      "type": "object",
+      "properties": {
+        "classroom_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "link": {
+          "type": "string"
+        }
+      },
+      "title": "Request of Create new Quiz"
+    },
+    "apiCreateQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "quiz_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "Response of Create new Quiz"
+    },
+    "apiDescribeQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "quiz": {
+          "$ref": "#/definitions/apiQuiz"
+        }
+      },
+      "title": "Response of Describe Quiz"
+    },
+    "apiListQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "quizes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiQuiz"
+          }
+        },
+        "current_page": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "is_last": {
+          "type": "boolean"
+        }
+      },
+      "title": "Response on paginate for List of Quizes\nQuizes - founded quizes\nCurrentPage - current page\nIsLast - is last page?"
+    },
+    "apiQuiz": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "classroom_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "link": {
+          "type": "string"
+        }
+      }
+    },
+    "apiRemoveQuizV1Request": {
+      "type": "object",
+      "properties": {
+        "quiz_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "Request on remove quiz by Id"
+    },
+    "apiRemoveQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      },
+      "title": "Response on remove quiz\nFound - something deleted?"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
