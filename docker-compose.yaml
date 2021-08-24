@@ -5,6 +5,22 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ocp-quiz
+    environment:
+      DB_DSN: 'postgres://postgres:postgres@0.0.0.0:5432/postgres?sslmode=disable'
     ports:
       - '8081:8081'
       - '8083:8083'
+    depends_on:
+      - pg
+  pg:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
