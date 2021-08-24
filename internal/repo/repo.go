@@ -124,11 +124,9 @@ func (d *dbRepo) RemoveEntity(ctx context.Context, entityId uint64) bool {
 
 func NewRepo(db *sql.DB) *dbRepo {
 	stmCache := sq.NewStmtCache(db)
-	builder := sq.StatementBuilder
-	builder.PlaceholderFormat(sq.Dollar).RunWith(stmCache)
 
 	return &dbRepo{
-		stmBuilder:  builder,
+		stmBuilder:  sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(stmCache),
 		tableName:   "quiz",
 		userId:      "user_id",
 		classroomId: "classroom_id",

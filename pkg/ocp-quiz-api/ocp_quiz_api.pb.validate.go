@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ensure the imports are used
@@ -30,7 +30,7 @@ var (
 	_ = time.Duration(0)
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
-	_ = ptypes.DynamicAny{}
+	_ = anypb.Any{}
 )
 
 // Validate checks the field values on Quiz with the rules defined in the proto
@@ -113,9 +113,19 @@ func (m *CreateQuizV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for ClassroomId
+	if m.GetClassroomId() <= 0 {
+		return CreateQuizV1RequestValidationError{
+			field:  "ClassroomId",
+			reason: "value must be greater than 0",
+		}
+	}
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		return CreateQuizV1RequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+	}
 
 	// no validation rules for Link
 
@@ -255,7 +265,12 @@ func (m *DescribeQuizV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for QuizId
+	if m.GetQuizId() <= 0 {
+		return DescribeQuizV1RequestValidationError{
+			field:  "QuizId",
+			reason: "value must be greater than 0",
+		}
+	}
 
 	return nil
 }
@@ -401,9 +416,19 @@ func (m *ListQuizV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Limit
+	if m.GetLimit() < 1 {
+		return ListQuizV1RequestValidationError{
+			field:  "Limit",
+			reason: "value must be greater than or equal to 1",
+		}
+	}
 
-	// no validation rules for Offset
+	if m.GetOffset() < 0 {
+		return ListQuizV1RequestValidationError{
+			field:  "Offset",
+			reason: "value must be greater than or equal to 0",
+		}
+	}
 
 	return nil
 }
@@ -489,8 +514,6 @@ func (m *ListQuizV1Response) Validate() error {
 
 	// no validation rules for CurrentPage
 
-	// no validation rules for IsLast
-
 	return nil
 }
 
@@ -558,7 +581,12 @@ func (m *RemoveQuizV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for QuizId
+	if m.GetQuizId() <= 0 {
+		return RemoveQuizV1RequestValidationError{
+			field:  "QuizId",
+			reason: "value must be greater than 0",
+		}
+	}
 
 	return nil
 }

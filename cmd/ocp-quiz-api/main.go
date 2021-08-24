@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/api"
+	"github.com/ozoncp/ocp-quiz-api/internal/db"
+	repo "github.com/ozoncp/ocp-quiz-api/internal/repo"
 	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
 
@@ -48,14 +50,14 @@ const (
 	httpPort           = ":8083"
 )
 
-func run() error {
+func run(r repo.Repo) error {
 	listener, err := net.Listen("tcp", grpcPort)
 	if err != nil {
 		return errors.Wrapf(err, "failed to start tcp listener on %s", grpcPort)
 	}
 
 	server := grpc.NewServer()
-	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService())
+	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService(r))
 
 	log.Info().
 		Str("address", listener.Addr().String()).
@@ -92,9 +94,15 @@ func runJSON() {
 }
 
 func main() {
+	dsn := os.Getenv("DB_DSN")
+	database := db.Connect(dsn)
+	defer database.Close()
+
+	r := repo.NewRepo(database)
+
 	go runJSON()
 
-	if err := run(); err != nil {
+	if err := run(r); err != nil {
 		log.Fatal().
 			Msgf(err.Error())
 	}
