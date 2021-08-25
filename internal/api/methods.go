@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
+	"github.com/ozoncp/ocp-quiz-api/internal/utils"
 	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
 
@@ -100,4 +101,42 @@ func (s *api) RemoveQuiz(ctx context.Context, req *ocp_quiz_api.RemoveQuizV1Requ
 	found := s.repo.RemoveEntity(ctx, req.QuizId)
 
 	return &ocp_quiz_api.RemoveQuizV1Response{Found: found}, nil
+}
+
+// MultiCreateQuiz  Creates new Quizes and returns this IDs
+func (s *api) MultiCreateQuiz(ctx context.Context, req *ocp_quiz_api.MultiCreateQuizV1Request) (*ocp_quiz_api.MultiCreateQuizV1Response, error) {
+	log.Info().Int("Count", len(req.Quizes)).Msg("MultiCreateRequestV1")
+
+	quizes := make([]models.Quiz, 0, len(req.Quizes))
+
+	for _, req := range req.Quizes {
+		quizes = append(quizes, models.Quiz{
+			Id:          0,
+			ClassroomId: req.ClassroomId,
+			UserId:      req.UserId,
+			Link:        req.Link,
+		})
+	}
+	batches, err := utils.SplitToBulks(quizes, s.batchSize)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, err.Error())
+	}
+
+	ids := make([]uint64, 0, len(quizes))
+
+	for _, batch := range batches {
+		batchIds, err := s.repo.AddEntities(ctx, batch)
+
+		if err != nil {
+			return nil, status.Error(codes.Canceled, err.Error())
+		}
+
+		for _, i := range batchIds {
+			ids = append(ids, i)
+		}
+	}
+
+	return &ocp_quiz_api.MultiCreateQuizV1Response{
+		QuizesIds: ids,
+	}, nil
 }

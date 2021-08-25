@@ -33,7 +33,7 @@ var _ = Describe("Methods", func() {
 	})
 	Context("Request", func() {
 		JustBeforeEach(func() {
-			reqApi = NewOcpQuizApiService(mockRepo)
+			reqApi = NewOcpQuizApiService(mockRepo, 5)
 			ctx = context.Background()
 		})
 		It("Create without errors", func() {
@@ -68,6 +68,46 @@ var _ = Describe("Methods", func() {
 
 			Expect(err.Error()).To(Equal("rpc error: code = Aborted desc = some error"))
 		})
+		Context("MultiCreate", func() {
+			request := []*ocp_quiz_api.CreateQuizV1Request{
+				{ClassroomId: 100, UserId: 1000, Link: "one"},
+				{ClassroomId: 200, UserId: 2000, Link: "two"},
+				{ClassroomId: 300, UserId: 3000, Link: "three"},
+			}
+			It("without errors", func() {
+				expIds := []uint64{1, 2, 3}
+
+				mockRepo.EXPECT().
+					AddEntities(ctx, gomock.Any()).
+					Return(expIds, nil).
+					MaxTimes(1).
+					MinTimes(1)
+				resp, err := reqApi.MultiCreateQuiz(
+					ctx, &ocp_quiz_api.MultiCreateQuizV1Request{Quizes: request},
+				)
+
+				expected := ocp_quiz_api.MultiCreateQuizV1Response{QuizesIds: expIds}
+				Expect(err).ToNot(HaveOccurred())
+				Expect(resp).To(Equal(&expected))
+
+			})
+			It("with errors", func() {
+				expError := errors.New("test")
+				mockRepo.EXPECT().
+					AddEntities(ctx, gomock.Any()).
+					Return(nil, expError).
+					MaxTimes(1).
+					MinTimes(1)
+				resp, err := reqApi.MultiCreateQuiz(
+					ctx, &ocp_quiz_api.MultiCreateQuizV1Request{Quizes: request},
+				)
+
+				Expect(err.Error()).To(Equal("rpc error: code = Canceled desc = test"))
+				Expect(resp).To(BeNil())
+
+			})
+		})
+
 		It("List without error", func() {
 			offset, limit := uint64(1), uint64(3)
 			requests := []models.Quiz{

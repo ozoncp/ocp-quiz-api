@@ -17,7 +17,7 @@ var NotExists = errors.New("entity does not exist")
 // Repo - интерфейс хранилища для сущности Quiz
 type Repo interface {
 	AddEntity(ctx context.Context, entity models.Quiz) (uint64, error)
-	AddEntities(ctx context.Context, entities []models.Quiz) error
+	AddEntities(ctx context.Context, entities []models.Quiz) ([]uint64, error)
 	ListEntities(ctx context.Context, limit, offset uint64) ([]models.Quiz, error)
 	DescribeEntity(ctx context.Context, entityId uint64) (*models.Quiz, error)
 	RemoveEntity(ctx context.Context, entityId uint64) bool
@@ -50,18 +50,28 @@ func (d *dbRepo) AddEntity(ctx context.Context, entity models.Quiz) (uint64, err
 	return newQuizId, nil
 }
 
-func (d *dbRepo) AddEntities(ctx context.Context, entities []models.Quiz) error {
+func (d *dbRepo) AddEntities(ctx context.Context, entities []models.Quiz) ([]uint64, error) {
 	query := d.stmBuilder.Insert(d.tableName).
-		Columns(d.userId, d.classroomId, d.link)
+		Columns(d.userId, d.classroomId, d.link).
+		Suffix("RETURNING id")
 
 	for _, r := range entities {
 		query = query.Values(r.UserId, r.ClassroomId, r.Link)
 	}
 
-	if _, err := query.ExecContext(ctx); err != nil {
-		return err
+	rows, err := query.QueryContext(ctx)
+
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	newIds := make([]uint64, 0, len(entities))
+	for rows.Next() {
+		id := uint64(0)
+		rows.Scan(&id)
+		newIds = append(newIds, id)
+	}
+	return newIds, nil
 }
 
 func (d *dbRepo) ListEntities(ctx context.Context, limit, offset uint64) ([]models.Quiz, error) {

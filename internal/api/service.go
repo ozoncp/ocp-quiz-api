@@ -7,11 +7,13 @@ import (
 
 type api struct {
 	ocp_quiz_api.UnimplementedOcpQuizApiServiceServer
-	repo repo.Repo
+	repo      repo.Repo
+	batchSize int
 }
 
-func NewOcpQuizApiService(r repo.Repo) *api {
+func NewOcpQuizApiService(r repo.Repo, batchSize int) *api {
 	return &api{
-		repo: r,
+		repo:      r,
+		batchSize: batchSize,
 	}
 }

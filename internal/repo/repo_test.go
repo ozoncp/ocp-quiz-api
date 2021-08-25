@@ -98,17 +98,23 @@ var _ = Describe("Repo", func() {
 			for _, req := range quiz {
 				expectedQueryArgs = append(expectedQueryArgs, req.UserId, req.ClassroomId, req.Link)
 			}
-			res := sqlmock.NewResult(3, 3)
+
+			expectedNewIds := []uint64{1, 2, 3, 4}
+			returnRows := sqlmock.NewRows([]string{"id"})
+			for _, id := range expectedNewIds {
+				returnRows.AddRow(id)
+			}
 
 			dbMock.ExpectPrepare(
-				"INSERT INTO quiz \\(user_id,classroom_id,link\\) VALUES \\(\\$1,\\$2,\\$3\\),\\(\\$4,\\$5,\\$6\\),\\(\\$7,\\$8,\\$9\\)",
+				"INSERT INTO quiz \\(user_id,classroom_id,link\\) VALUES \\(\\$1,\\$2,\\$3\\),\\(\\$4,\\$5,\\$6\\),\\(\\$7,\\$8,\\$9\\) RETURNING id",
 			).
-				ExpectExec().
+				ExpectQuery().
 				WithArgs(expectedQueryArgs...).
-				WillReturnResult(res)
+				WillReturnRows(returnRows)
 
-			err := rep.AddEntities(ctx, quiz)
+			ids, err := rep.AddEntities(ctx, quiz)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(ids).To(Equal(expectedNewIds))
 		})
 		It("ListEntities", func() {
 			dbRows := [][]driver.Value{
@@ -256,14 +262,15 @@ var _ = Describe("Repo", func() {
 				}
 				expectedError := errors.New("test")
 				dbMock.ExpectPrepare(
-					"INSERT INTO quiz \\(user_id,classroom_id,link\\) VALUES \\(\\$1,\\$2,\\$3\\)",
+					"INSERT INTO quiz \\(user_id,classroom_id,link\\) VALUES \\(\\$1,\\$2,\\$3\\) RETURNING id",
 				).
-					ExpectExec().
+					ExpectQuery().
 					WithArgs(quiz.UserId, quiz.ClassroomId, quiz.Link).
 					WillReturnError(expectedError)
 
-				err := rep.AddEntities(ctx, []models.Quiz{quiz})
+				ids, err := rep.AddEntities(ctx, []models.Quiz{quiz})
 				Expect(err).To(Equal(expectedError))
+				Expect(ids).To(BeNil())
 
 			})
 		})

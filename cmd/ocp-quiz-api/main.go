@@ -57,7 +57,7 @@ func run(r repo.Repo) error {
 	}
 
 	server := grpc.NewServer()
-	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService(r))
+	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService(r, 5))
 
 	log.Info().
 		Str("address", listener.Addr().String()).

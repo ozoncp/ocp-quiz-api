@@ -26,6 +26,9 @@ type OcpQuizApiServiceClient interface {
 	ListQuiz(ctx context.Context, in *ListQuizV1Request, opts ...grpc.CallOption) (*ListQuizV1Response, error)
 	// Remove Quiz
 	RemoveQuiz(ctx context.Context, in *RemoveQuizV1Request, opts ...grpc.CallOption) (*RemoveQuizV1Response, error)
+	// MultiCreateRequestV1 creates multiple requests.
+	// Returns array of new ids in corresponding order.
+	MultiCreateQuiz(ctx context.Context, in *MultiCreateQuizV1Request, opts ...grpc.CallOption) (*MultiCreateQuizV1Response, error)
 }
 
 type ocpQuizApiServiceClient struct {
@@ -72,6 +75,15 @@ func (c *ocpQuizApiServiceClient) RemoveQuiz(ctx context.Context, in *RemoveQuiz
 	return out, nil
 }
 
+func (c *ocpQuizApiServiceClient) MultiCreateQuiz(ctx context.Context, in *MultiCreateQuizV1Request, opts ...grpc.CallOption) (*MultiCreateQuizV1Response, error) {
+	out := new(MultiCreateQuizV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.quiz.api.OcpQuizApiService/MultiCreateQuiz", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OcpQuizApiServiceServer is the server API for OcpQuizApiService service.
 // All implementations must embed UnimplementedOcpQuizApiServiceServer
 // for forward compatibility
@@ -84,6 +96,9 @@ type OcpQuizApiServiceServer interface {
 	ListQuiz(context.Context, *ListQuizV1Request) (*ListQuizV1Response, error)
 	// Remove Quiz
 	RemoveQuiz(context.Context, *RemoveQuizV1Request) (*RemoveQuizV1Response, error)
+	// MultiCreateRequestV1 creates multiple requests.
+	// Returns array of new ids in corresponding order.
+	MultiCreateQuiz(context.Context, *MultiCreateQuizV1Request) (*MultiCreateQuizV1Response, error)
 	mustEmbedUnimplementedOcpQuizApiServiceServer()
 }
 
@@ -102,6 +117,9 @@ func (UnimplementedOcpQuizApiServiceServer) ListQuiz(context.Context, *ListQuizV
 }
 func (UnimplementedOcpQuizApiServiceServer) RemoveQuiz(context.Context, *RemoveQuizV1Request) (*RemoveQuizV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveQuiz not implemented")
+}
+func (UnimplementedOcpQuizApiServiceServer) MultiCreateQuiz(context.Context, *MultiCreateQuizV1Request) (*MultiCreateQuizV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreateQuiz not implemented")
 }
 func (UnimplementedOcpQuizApiServiceServer) mustEmbedUnimplementedOcpQuizApiServiceServer() {}
 
@@ -188,6 +206,24 @@ func _OcpQuizApiService_RemoveQuiz_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OcpQuizApiService_MultiCreateQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreateQuizV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OcpQuizApiServiceServer).MultiCreateQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.quiz.api.OcpQuizApiService/MultiCreateQuiz",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OcpQuizApiServiceServer).MultiCreateQuiz(ctx, req.(*MultiCreateQuizV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OcpQuizApiService_ServiceDesc is the grpc.ServiceDesc for OcpQuizApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -210,6 +246,10 @@ var OcpQuizApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveQuiz",
 			Handler:    _OcpQuizApiService_RemoveQuiz_Handler,
+		},
+		{
+			MethodName: "MultiCreateQuiz",
+			Handler:    _OcpQuizApiService_MultiCreateQuiz_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -69,10 +69,11 @@ var _ = Describe("Flush into repo by", func() {
 		})
 		It("error, returned from Repo", func() {
 			f := NewFlusher(1, mockRepo)
-			mockRepo.EXPECT().AddEntities(gomock.Any(), gomock.Any()).Return(repo.ErrCannotAddEntity)
+			mockRepo.EXPECT().AddEntities(gomock.Any(), gomock.Any()).Return(nil, repo.ErrCannotAddEntity)
 
-			_, err := f.Flush(ctx, entities)
+			res, err := f.Flush(ctx, entities)
 			gomega.Expect(err).Should(gomega.Equal(repo.ErrCannotAddEntity))
+			gomega.Expect(res).To(gomega.BeNil())
 		})
 	})
 })

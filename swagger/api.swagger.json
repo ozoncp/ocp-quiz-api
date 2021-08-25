@@ -152,6 +152,39 @@
           "OcpQuizApiService"
         ]
       }
+    },
+    "/v1/quizes": {
+      "post": {
+        "summary": "MultiCreateRequestV1 creates multiple requests.\nReturns array of new ids in corresponding order.",
+        "operationId": "OcpQuizApiService_MultiCreateQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateQuizV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -206,6 +239,29 @@
         }
       },
       "title": "Response on paginate for List of Quizes\nQuizes - founded quizes\nCurrentPage - current page\nIsLast - is last page?"
+    },
+    "apiMultiCreateQuizV1Request": {
+      "type": "object",
+      "properties": {
+        "quizes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiCreateQuizV1Request"
+          }
+        }
+      }
+    },
+    "apiMultiCreateQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "quizes_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
+        }
+      }
     },
     "apiQuiz": {
       "type": "object",
