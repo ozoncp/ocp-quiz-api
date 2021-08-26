@@ -14,17 +14,37 @@ import (
 	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
 
+type AnyContext struct {
+}
+
+func (c AnyContext) Matches(val interface{}) bool {
+	if _, ok := val.(context.Context); ok {
+		return true
+	}
+	return false
+}
+
+func (c AnyContext) String() string {
+	return "this is not the droid you're looking for"
+}
+
 var _ = Describe("Methods", func() {
+
 	var (
-		reqApi   *api
-		mockRepo *mocks.MockRepo
-		mockCtrl *gomock.Controller
-		ctx      context.Context
+		reqApi       *api
+		mockRepo     *mocks.MockRepo
+		mockCtrl     *gomock.Controller
+		ctx          context.Context
+		mockMetrics  *mocks.MockMetricsReporter
+		mockProducer *mocks.MockProducer
+		anyCtx       AnyContext
 	)
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockRepo = mocks.NewMockRepo(mockCtrl)
+		mockMetrics = mocks.NewMockMetricsReporter(mockCtrl)
+		mockProducer = mocks.NewMockProducer(mockCtrl)
 		ctx = context.Background()
 	})
 
@@ -33,13 +53,21 @@ var _ = Describe("Methods", func() {
 	})
 	Context("Request", func() {
 		JustBeforeEach(func() {
-			reqApi = NewOcpQuizApiService(mockRepo, 5)
+			reqApi = NewOcpQuizApiService(mockRepo, 5, mockMetrics, mockProducer)
 			ctx = context.Background()
+			anyCtx = AnyContext{}
 		})
 		It("Create without errors", func() {
 			newQuizId := uint64(19)
+
+			mockProducer.EXPECT().
+				Send(gomock.Any())
+
+			mockMetrics.EXPECT().
+				IncCreate(uint(1), "CreateQuiz")
+
 			mockRepo.EXPECT().
-				AddEntity(ctx, gomock.Any()).
+				AddEntity(anyCtx, gomock.Any()).
 				Return(newQuizId, nil).
 				MaxTimes(1).
 				MinTimes(1)
@@ -56,7 +84,7 @@ var _ = Describe("Methods", func() {
 		})
 		It("Create with errors", func() {
 			mockRepo.EXPECT().
-				AddEntity(ctx, gomock.Any()).
+				AddEntity(anyCtx, gomock.Any()).
 				Return(uint64(0), errors.New("some error")).
 				MaxTimes(1).
 				MinTimes(1)
@@ -77,8 +105,15 @@ var _ = Describe("Methods", func() {
 			It("without errors", func() {
 				expIds := []uint64{1, 2, 3}
 
+				mockProducer.EXPECT().
+					Send(gomock.Any()).
+					MinTimes(1)
+
+				mockMetrics.EXPECT().
+					IncCreate(uint(len(expIds)), "MultiCreateQuiz")
+
 				mockRepo.EXPECT().
-					AddEntities(ctx, gomock.Any()).
+					AddEntities(anyCtx, gomock.Any()).
 					Return(expIds, nil).
 					MaxTimes(1).
 					MinTimes(1)
@@ -94,7 +129,7 @@ var _ = Describe("Methods", func() {
 			It("with errors", func() {
 				expError := errors.New("test")
 				mockRepo.EXPECT().
-					AddEntities(ctx, gomock.Any()).
+					AddEntities(anyCtx, gomock.Any()).
 					Return(nil, expError).
 					MaxTimes(1).
 					MinTimes(1)
@@ -191,11 +226,101 @@ var _ = Describe("Methods", func() {
 			Expect(resp).To(BeNil())
 			Expect(err.Error()).To(Equal("rpc error: code = NotFound desc = entity does not exist"))
 		})
+
+		Context("Update test", func() {
+			quiz := models.Quiz{
+				Id:          1,
+				ClassroomId: 1,
+				UserId:      1,
+				Link:        "one",
+			}
+
+			update := func(expectUpdate bool) {
+				mockProducer.EXPECT().
+					Send(gomock.Any()).
+					MinTimes(1)
+
+				mockMetrics.EXPECT().
+					IncUpdate(uint(1), "UpdateQuiz")
+
+				mockRepo.EXPECT().
+					UpdateEntity(anyCtx, quiz).
+					Return(expectUpdate, nil).
+					MaxTimes(1).
+					MinTimes(1)
+
+				resp, err := reqApi.UpdateQuiz(
+					ctx, &ocp_quiz_api.UpdateQuizV1Request{
+						QuizId:      quiz.Id,
+						UserId:      quiz.UserId,
+						ClassroomId: quiz.ClassroomId,
+						Link:        quiz.Link,
+					},
+				)
+
+				Expect(resp).
+					To(Equal(&ocp_quiz_api.UpdateQuizV1Response{
+						Updated: expectUpdate,
+					}))
+
+				Expect(err).ToNot(HaveOccurred())
+			}
+			It("exist", func() {
+				update(true)
+			})
+			It("not exist", func() {
+				update(false)
+			})
+			It("invalid arguments", func() {
+				resp, err := reqApi.UpdateQuiz(
+					ctx, &ocp_quiz_api.UpdateQuizV1Request{
+						QuizId:      0,
+						UserId:      0,
+						ClassroomId: 0,
+						Link:        "quiz.Link",
+					},
+				)
+
+				Expect(resp).To(BeNil())
+				Expect(err.Error()).To(Equal("rpc error: code = InvalidArgument desc = invalid UpdateQuizV1Request.QuizId: value must be greater than 0"))
+			})
+			It("err by repo", func() {
+				testErr := errors.New("test")
+				mockRepo.EXPECT().
+					UpdateEntity(anyCtx, quiz).
+					Return(false, testErr).
+					MaxTimes(1).
+					MinTimes(1)
+
+				resp, err := reqApi.UpdateQuiz(
+					ctx, &ocp_quiz_api.UpdateQuizV1Request{
+						QuizId:      quiz.Id,
+						UserId:      quiz.UserId,
+						ClassroomId: quiz.ClassroomId,
+						Link:        quiz.Link,
+					},
+				)
+
+				Expect(resp).To(Equal(&ocp_quiz_api.UpdateQuizV1Response{
+					Updated: false,
+				}))
+				Expect(err.Error()).To(Equal("test"))
+			})
+		})
+
 		Context("Remove test", func() {
 			remove := func(expectFound bool) {
 				requestId := uint64(1)
+
+				mockProducer.EXPECT().
+					Send(gomock.Any()).
+					MinTimes(1)
+
+				mockMetrics.EXPECT().
+					IncRemove(uint(1), "RemoveQuiz")
+
 				mockRepo.EXPECT().
-					RemoveEntity(ctx, requestId).
+					RemoveEntity(anyCtx, requestId).
 					Return(expectFound).
 					MaxTimes(1).
 					MinTimes(1)

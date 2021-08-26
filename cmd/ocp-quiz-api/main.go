@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Shopify/sarama"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -16,6 +17,8 @@ import (
 
 	"github.com/ozoncp/ocp-quiz-api/internal/api"
 	"github.com/ozoncp/ocp-quiz-api/internal/db"
+	"github.com/ozoncp/ocp-quiz-api/internal/metrics"
+	"github.com/ozoncp/ocp-quiz-api/internal/producer"
 	repo "github.com/ozoncp/ocp-quiz-api/internal/repo"
 	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
@@ -51,14 +54,31 @@ const (
 	httpPort           = ":8083"
 )
 
-func run(r repo.Repo) error {
+func getProducer() producer.Producer {
+	brokers := []string{"localhost:9094"}
+
+	cfg := sarama.NewConfig()
+	cfg.Producer.Partitioner = sarama.NewRandomPartitioner
+	cfg.Producer.RequiredAcks = sarama.WaitForAll
+	cfg.Producer.Return.Successes = true
+	p, err := sarama.NewSyncProducer(brokers, cfg)
+	kafkaTopic := "ocp-quiz-api"
+
+	if err != nil {
+		log.Panic().Msgf("failed to connect to Kafka brokers: %v", err)
+	}
+
+	return producer.NewProducer(kafkaTopic, p)
+}
+
+func run(r repo.Repo, m metrics.MetricsReporter, p producer.Producer) error {
 	listener, err := net.Listen("tcp", grpcPort)
 	if err != nil {
 		return errors.Wrapf(err, "failed to start tcp listener on %s", grpcPort)
 	}
 
 	server := grpc.NewServer()
-	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService(r, 5))
+	ocp_quiz_api.RegisterOcpQuizApiServiceServer(server, api.NewOcpQuizApiService(r, 5, m, p))
 
 	log.Info().
 		Str("address", listener.Addr().String()).
@@ -108,11 +128,13 @@ func main() {
 	defer database.Close()
 
 	r := repo.NewRepo(database)
+	m := metrics.NewMetricsReporter()
+	p := getProducer()
 
 	go runJSON()
 	go runMetrics()
 
-	if err := run(r); err != nil {
+	if err := run(r, m, p); err != nil {
 		log.Fatal().
 			Msgf(err.Error())
 	}

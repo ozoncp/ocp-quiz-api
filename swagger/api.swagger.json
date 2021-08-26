@@ -151,6 +151,44 @@
         "tags": [
           "OcpQuizApiService"
         ]
+      },
+      "put": {
+        "summary": "UpdateQuiz updates quiz data",
+        "operationId": "OcpQuizApiService_UpdateQuiz",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiUpdateQuizV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUpdateQuizV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpQuizApiService"
+        ]
       }
     },
     "/v1/quizes": {
@@ -301,6 +339,34 @@
         }
       },
       "title": "Response on remove quiz\nFound - something deleted?"
+    },
+    "apiUpdateQuizV1Request": {
+      "type": "object",
+      "properties": {
+        "quiz_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "classroom_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "link": {
+          "type": "string"
+        }
+      }
+    },
+    "apiUpdateQuizV1Response": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "boolean"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",

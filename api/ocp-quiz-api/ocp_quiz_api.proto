@@ -48,6 +48,14 @@ service OcpQuizApiService {
       body: "*"
     };
   }
+
+  // UpdateQuiz updates quiz data
+  rpc UpdateQuiz(UpdateQuizV1Request) returns (UpdateQuizV1Response) {
+    option (google.api.http) = {
+      put: "/v1/quiz/{quiz_id}"
+      body: "*"
+    };
+  }
 }
 
 message Quiz{
@@ -55,6 +63,17 @@ message Quiz{
   uint64 classroom_id = 2;
   uint64 user_id = 3;
   string link = 4;
+}
+
+message UpdateQuizV1Request{
+  uint64 quiz_id = 1 [(validate.rules).uint64.gt = 0];
+  uint64 user_id = 2 [(validate.rules).uint64.gt = 0];
+  uint64 classroom_id = 3 [(validate.rules).uint64.gt = 0];
+  string link = 4;
+}
+
+message UpdateQuizV1Response{
+  bool updated = 1;
 }
 
 // Request of Create new Quiz
@@ -113,4 +132,17 @@ message RemoveQuizV1Request {
 // Found - something deleted?
 message RemoveQuizV1Response {
   bool found = 1;
+}
+
+message QuizAPIEvent {
+  uint64 quiz_id = 1;
+  enum EventType {
+    CREATE = 0;
+    READ = 1;
+    UPDATE = 2;
+    DELETE = 3;
+  }
+  EventType event = 2;
+  string error = 3;
+  map<string, string> trace_span = 4;
 }

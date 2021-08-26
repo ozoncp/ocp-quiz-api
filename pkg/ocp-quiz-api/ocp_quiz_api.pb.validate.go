@@ -105,6 +105,165 @@ var _ interface {
 	ErrorName() string
 } = QuizValidationError{}
 
+// Validate checks the field values on UpdateQuizV1Request with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateQuizV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetQuizId() <= 0 {
+		return UpdateQuizV1RequestValidationError{
+			field:  "QuizId",
+			reason: "value must be greater than 0",
+		}
+	}
+
+	if m.GetUserId() <= 0 {
+		return UpdateQuizV1RequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+	}
+
+	if m.GetClassroomId() <= 0 {
+		return UpdateQuizV1RequestValidationError{
+			field:  "ClassroomId",
+			reason: "value must be greater than 0",
+		}
+	}
+
+	// no validation rules for Link
+
+	return nil
+}
+
+// UpdateQuizV1RequestValidationError is the validation error returned by
+// UpdateQuizV1Request.Validate if the designated constraints aren't met.
+type UpdateQuizV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateQuizV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateQuizV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateQuizV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateQuizV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateQuizV1RequestValidationError) ErrorName() string {
+	return "UpdateQuizV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateQuizV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateQuizV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateQuizV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateQuizV1RequestValidationError{}
+
+// Validate checks the field values on UpdateQuizV1Response with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateQuizV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Updated
+
+	return nil
+}
+
+// UpdateQuizV1ResponseValidationError is the validation error returned by
+// UpdateQuizV1Response.Validate if the designated constraints aren't met.
+type UpdateQuizV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateQuizV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateQuizV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateQuizV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateQuizV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateQuizV1ResponseValidationError) ErrorName() string {
+	return "UpdateQuizV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateQuizV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateQuizV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateQuizV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateQuizV1ResponseValidationError{}
+
 // Validate checks the field values on CreateQuizV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -864,3 +1023,76 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RemoveQuizV1ResponseValidationError{}
+
+// Validate checks the field values on QuizAPIEvent with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *QuizAPIEvent) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for QuizId
+
+	// no validation rules for Event
+
+	// no validation rules for Error
+
+	// no validation rules for TraceSpan
+
+	return nil
+}
+
+// QuizAPIEventValidationError is the validation error returned by
+// QuizAPIEvent.Validate if the designated constraints aren't met.
+type QuizAPIEventValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e QuizAPIEventValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e QuizAPIEventValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e QuizAPIEventValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e QuizAPIEventValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e QuizAPIEventValidationError) ErrorName() string { return "QuizAPIEventValidationError" }
+
+// Error satisfies the builtin error interface
+func (e QuizAPIEventValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sQuizAPIEvent.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = QuizAPIEventValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = QuizAPIEventValidationError{}

@@ -216,6 +216,50 @@ var _ = Describe("Repo", func() {
 			Expect(actualReq).To(BeNil())
 		})
 
+		It("Update exists entity", func() {
+			quiz := models.Quiz{
+				Id:          1,
+				ClassroomId: 1,
+				UserId:      1,
+				Link:        "one",
+			}
+
+			res := sqlmock.NewResult(0, 1)
+
+			dbMock.ExpectPrepare(
+				"UPDATE quiz SET classroom_id = \\$1, user_id = \\$2, link = \\$3 WHERE id=\\$4",
+			).
+				ExpectExec().
+				WithArgs(quiz.ClassroomId, quiz.UserId, quiz.Link, quiz.Id).
+				WillReturnResult(res)
+
+			updated, err := rep.UpdateEntity(ctx, quiz)
+			Expect(updated).To(Equal(true))
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("Update not-exists entity", func() {
+			quiz := models.Quiz{
+				Id:          1,
+				ClassroomId: 1,
+				UserId:      1,
+				Link:        "one",
+			}
+
+			res := sqlmock.NewResult(0, 0)
+
+			dbMock.ExpectPrepare(
+				"UPDATE quiz SET classroom_id = \\$1, user_id = \\$2, link = \\$3 WHERE id=\\$4",
+			).
+				ExpectExec().
+				WithArgs(quiz.ClassroomId, quiz.UserId, quiz.Link, quiz.Id).
+				WillReturnResult(res)
+
+			updated, err := rep.UpdateEntity(ctx, quiz)
+			Expect(updated).To(Equal(false))
+			Expect(err).ToNot(HaveOccurred())
+		})
+
 		Context("DB errors", func() {
 			expectedError := errors.New("some error")
 			It("on ListEntites", func() {

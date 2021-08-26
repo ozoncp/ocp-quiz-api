@@ -21,6 +21,7 @@ type Repo interface {
 	ListEntities(ctx context.Context, limit, offset uint64) ([]models.Quiz, error)
 	DescribeEntity(ctx context.Context, entityId uint64) (*models.Quiz, error)
 	RemoveEntity(ctx context.Context, entityId uint64) bool
+	UpdateEntity(ctx context.Context, entity models.Quiz) (bool, error)
 }
 
 type dbRepo struct {
@@ -130,6 +131,26 @@ func (d *dbRepo) RemoveEntity(ctx context.Context, entityId uint64) bool {
 	}
 	return rowsDeleted > 0
 
+}
+
+func (d *dbRepo) UpdateEntity(ctx context.Context, entity models.Quiz) (bool, error) {
+	query := d.stmBuilder.Update(d.tableName).
+		Set(d.classroomId, entity.ClassroomId).
+		Set(d.userId, entity.UserId).
+		Set(d.link, entity.Link).
+		Where("id=?", entity.Id)
+
+	rows, err := query.ExecContext(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	rowsUpdated, err := rows.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsUpdated == 1, nil
 }
 
 func NewRepo(db *sql.DB) *dbRepo {
