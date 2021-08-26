@@ -10,6 +10,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 
@@ -93,6 +94,14 @@ func runJSON() {
 	}
 }
 
+func runMetrics() {
+	http.Handle("/metrics", promhttp.Handler())
+	if err := http.ListenAndServe(":9100", nil); err != nil {
+		log.Panic().Msgf("metrics don't started: %v", err)
+	}
+	log.Info().Int("port", 9100).Msg("metrics started")
+}
+
 func main() {
 	dsn := os.Getenv("DB_DSN")
 	database := db.Connect(dsn)
@@ -101,6 +110,7 @@ func main() {
 	r := repo.NewRepo(database)
 
 	go runJSON()
+	go runMetrics()
 
 	if err := run(r); err != nil {
 		log.Fatal().
