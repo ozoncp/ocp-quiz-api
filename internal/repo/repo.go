@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
+
 	sq "github.com/Masterminds/squirrel"
 	sql "github.com/jmoiron/sqlx"
-
-	"github.com/ozoncp/ocp-quiz-api/internal/models"
+	"github.com/rs/zerolog/log"
 )
 
 var ErrCannotAddEntity = errors.New("cannot add entity")
@@ -17,10 +18,11 @@ var NotExists = errors.New("entity does not exist")
 // Repo - интерфейс хранилища для сущности Quiz
 type Repo interface {
 	AddEntity(ctx context.Context, entity models.Quiz) (uint64, error)
-	AddEntities(ctx context.Context, entities []models.Quiz) error
+	AddEntities(ctx context.Context, entities []models.Quiz) ([]uint64, error)
 	ListEntities(ctx context.Context, limit, offset uint64) ([]models.Quiz, error)
 	DescribeEntity(ctx context.Context, entityId uint64) (*models.Quiz, error)
 	RemoveEntity(ctx context.Context, entityId uint64) bool
+	UpdateEntity(ctx context.Context, entity models.Quiz) (bool, error)
 }
 
 type dbRepo struct {
@@ -50,18 +52,31 @@ func (d *dbRepo) AddEntity(ctx context.Context, entity models.Quiz) (uint64, err
 	return newQuizId, nil
 }
 
-func (d *dbRepo) AddEntities(ctx context.Context, entities []models.Quiz) error {
+func (d *dbRepo) AddEntities(ctx context.Context, entities []models.Quiz) ([]uint64, error) {
 	query := d.stmBuilder.Insert(d.tableName).
-		Columns(d.userId, d.classroomId, d.link)
+		Columns(d.userId, d.classroomId, d.link).
+		Suffix("RETURNING id")
 
 	for _, r := range entities {
 		query = query.Values(r.UserId, r.ClassroomId, r.Link)
 	}
 
-	if _, err := query.ExecContext(ctx); err != nil {
-		return err
+	rows, err := query.QueryContext(ctx)
+
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	newIds := make([]uint64, len(entities))
+	for i := 0; rows.Next(); i++ {
+		id := uint64(0)
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Error().Err(err).Msg("Can't get id")
+		}
+		newIds[i] = id
+	}
+	return newIds, nil
 }
 
 func (d *dbRepo) ListEntities(ctx context.Context, limit, offset uint64) ([]models.Quiz, error) {
@@ -120,6 +135,26 @@ func (d *dbRepo) RemoveEntity(ctx context.Context, entityId uint64) bool {
 	}
 	return rowsDeleted > 0
 
+}
+
+func (d *dbRepo) UpdateEntity(ctx context.Context, entity models.Quiz) (bool, error) {
+	query := d.stmBuilder.Update(d.tableName).
+		Set(d.classroomId, entity.ClassroomId).
+		Set(d.userId, entity.UserId).
+		Set(d.link, entity.Link).
+		Where("id=?", entity.Id)
+
+	rows, err := query.ExecContext(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	rowsUpdated, err := rows.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsUpdated == 1, nil
 }
 
 func NewRepo(db *sql.DB) *dbRepo {

@@ -1,15 +1,16 @@
 package flusher
 
 import (
-	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
-	"golang.org/x/net/context"
+	"context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/mocks"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"github.com/ozoncp/ocp-quiz-api/internal/repo"
 	"github.com/ozoncp/ocp-quiz-api/internal/utils"
+
+	"github.com/golang/mock/gomock"
+	. "github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
 
 var _ = Describe("Flush into repo by", func() {
@@ -69,10 +70,11 @@ var _ = Describe("Flush into repo by", func() {
 		})
 		It("error, returned from Repo", func() {
 			f := NewFlusher(1, mockRepo)
-			mockRepo.EXPECT().AddEntities(gomock.Any(), gomock.Any()).Return(repo.ErrCannotAddEntity)
+			mockRepo.EXPECT().AddEntities(gomock.Any(), gomock.Any()).Return(nil, repo.ErrCannotAddEntity)
 
-			_, err := f.Flush(ctx, entities)
+			res, err := f.Flush(ctx, entities)
 			gomega.Expect(err).Should(gomega.Equal(repo.ErrCannotAddEntity))
+			gomega.Expect(res).To(gomega.BeNil())
 		})
 	})
 })

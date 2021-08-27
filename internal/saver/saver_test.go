@@ -1,14 +1,14 @@
 package saver
 
 import (
+	"context"
 	"time"
-
-	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	"golang.org/x/net/context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/mocks"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
+
+	"github.com/golang/mock/gomock"
+	. "github.com/onsi/ginkgo"
 )
 
 var _ = Describe("Saver", func() {
