@@ -25,19 +25,17 @@ func (p *producer) Send(msgs ...EventMsg) {
 	if len(msgs) == 0 {
 		return
 	}
-	preped := make([]*sarama.ProducerMessage, 0, len(msgs))
-	for _, m := range msgs {
-		preped = append(
-			preped,
-			&sarama.ProducerMessage{
-				Topic:     p.topic,
-				Partition: -1,
-				Value:     m,
-			},
-		)
+	prepared := make([]*sarama.ProducerMessage, len(msgs))
+	for i, m := range msgs {
+		prepared[i] = &sarama.ProducerMessage{
+			Topic:     p.topic,
+			Partition: -1,
+			Value:     m,
+		}
+
 		log.Info().Msgf("%v", m)
 	}
-	err := p.kafkaProducer.SendMessages(preped)
+	err := p.kafkaProducer.SendMessages(prepared)
 	if err != nil {
 		log.Error().Msgf("failed to send messages to Kafka: %v", err)
 	}

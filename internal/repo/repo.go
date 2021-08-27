@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
+
 	sq "github.com/Masterminds/squirrel"
 	sql "github.com/jmoiron/sqlx"
-
-	"github.com/ozoncp/ocp-quiz-api/internal/models"
+	"github.com/rs/zerolog/log"
 )
 
 var ErrCannotAddEntity = errors.New("cannot add entity")
@@ -66,11 +67,14 @@ func (d *dbRepo) AddEntities(ctx context.Context, entities []models.Quiz) ([]uin
 		return nil, err
 	}
 
-	newIds := make([]uint64, 0, len(entities))
-	for rows.Next() {
+	newIds := make([]uint64, len(entities))
+	for i := 0; rows.Next(); i++ {
 		id := uint64(0)
-		rows.Scan(&id)
-		newIds = append(newIds, id)
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Error().Err(err).Msg("Can't get id")
+		}
+		newIds[i] = id
 	}
 	return newIds, nil
 }

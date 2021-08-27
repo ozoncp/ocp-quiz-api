@@ -1,15 +1,16 @@
 package flusher
 
 import (
-	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
-	"golang.org/x/net/context"
+	"context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/mocks"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"github.com/ozoncp/ocp-quiz-api/internal/repo"
 	"github.com/ozoncp/ocp-quiz-api/internal/utils"
+
+	"github.com/golang/mock/gomock"
+	. "github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
 
 var _ = Describe("Flush into repo by", func() {

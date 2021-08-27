@@ -1,7 +1,7 @@
 package flusher
 
 import (
-	"golang.org/x/net/context"
+	"context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"github.com/ozoncp/ocp-quiz-api/internal/repo"

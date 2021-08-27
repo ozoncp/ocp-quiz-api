@@ -6,13 +6,13 @@ import (
 	"database/sql/driver"
 	"errors"
 
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/ozoncp/ocp-quiz-api/internal/models"
 )
 
 var _ = Describe("Repo", func() {
@@ -99,7 +99,7 @@ var _ = Describe("Repo", func() {
 				expectedQueryArgs = append(expectedQueryArgs, req.UserId, req.ClassroomId, req.Link)
 			}
 
-			expectedNewIds := []uint64{1, 2, 3, 4}
+			expectedNewIds := []uint64{1, 2, 3}
 			returnRows := sqlmock.NewRows([]string{"id"})
 			for _, id := range expectedNewIds {
 				returnRows.AddRow(id)
@@ -122,7 +122,8 @@ var _ = Describe("Repo", func() {
 				{uint64(2), uint64(20), uint64(200), "two"},
 				{uint64(3), uint64(30), uint64(300), "three"},
 			}
-			expectedRequests := make([]models.Quiz, 0, len(dbRows))
+			offset, limit := uint64(1), uint64(10)
+			expectedRequests := make([]models.Quiz, 0, 10)
 			returnRows := sqlmock.NewRows([]string{"id", "user_id", "classroom_id", "link"})
 
 			for _, row := range dbRows {
@@ -134,8 +135,6 @@ var _ = Describe("Repo", func() {
 				})
 				returnRows.AddRow(row...)
 			}
-
-			offset, limit := uint64(1), uint64(10)
 
 			dbMock.ExpectPrepare(
 				"SELECT id, user_id, classroom_id, link FROM quiz LIMIT 10 OFFSET 1",

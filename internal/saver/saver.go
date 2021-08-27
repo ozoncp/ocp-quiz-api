@@ -1,10 +1,9 @@
 package saver
 
 import (
+	"context"
 	"sync"
 	"time"
-
-	"golang.org/x/net/context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/flusher"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"

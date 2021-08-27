@@ -3,12 +3,12 @@ package producer
 import (
 	"context"
 
+	ocpQuizApi "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
+
 	"github.com/Shopify/sarama"
 	"github.com/opentracing/opentracing-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/proto"
-
-	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
 
 type EventType int
@@ -58,7 +58,7 @@ func (e *event) Encode() ([]byte, error) {
 		return e.encodedData, e.encodeErr
 	}
 
-	message := &ocp_quiz_api.QuizAPIEvent{
+	message := &ocpQuizApi.QuizAPIEvent{
 		QuizId: e.quizId,
 	}
 	if e.err != nil {
@@ -67,13 +67,13 @@ func (e *event) Encode() ([]byte, error) {
 
 	switch e.eventType {
 	case CreateEvent:
-		message.Event = ocp_quiz_api.QuizAPIEvent_CREATE
+		message.Event = ocpQuizApi.QuizAPIEvent_CREATE
 	case ReadEvent:
-		message.Event = ocp_quiz_api.QuizAPIEvent_READ
+		message.Event = ocpQuizApi.QuizAPIEvent_READ
 	case UpdateEvent:
-		message.Event = ocp_quiz_api.QuizAPIEvent_UPDATE
+		message.Event = ocpQuizApi.QuizAPIEvent_UPDATE
 	case DeleteEvent:
-		message.Event = ocp_quiz_api.QuizAPIEvent_DELETE
+		message.Event = ocpQuizApi.QuizAPIEvent_DELETE
 	default:
 		log.Panic().Msgf("unexpected event type: %v", e.eventType)
 	}
