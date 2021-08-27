@@ -1,6 +1,8 @@
 package flusher
 
 import (
+	"golang.org/x/net/context"
+
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	"github.com/ozoncp/ocp-quiz-api/internal/repo"
 	"github.com/ozoncp/ocp-quiz-api/internal/utils"
@@ -8,7 +10,7 @@ import (
 
 // Flusher - интерфейс для сброса задач в хранилище
 type Flusher interface {
-	Flush(entities []models.Quiz) ([]models.Quiz, error)
+	Flush(ctx context.Context, entities []models.Quiz) ([]models.Quiz, error)
 }
 
 type flusher struct {
@@ -17,13 +19,13 @@ type flusher struct {
 }
 
 // Flush - записать объекты в Repo по батчам
-func (f *flusher) Flush(entities []models.Quiz) ([]models.Quiz, error) {
+func (f *flusher) Flush(ctx context.Context, entities []models.Quiz) ([]models.Quiz, error) {
 	batches, err := utils.SplitToBulks(entities, f.chunkSize)
 	if err != nil {
 		return nil, err
 	}
 	for _, chunk := range batches {
-		if err := f.entityRepo.AddEntities(chunk); err != nil {
+		if err := f.entityRepo.AddEntities(ctx, chunk); err != nil {
 			return nil, err
 		}
 	}

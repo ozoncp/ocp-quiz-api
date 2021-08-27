@@ -8,6 +8,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
+	"github.com/ozoncp/ocp-quiz-api/internal/models"
 	ocp_quiz_api "github.com/ozoncp/ocp-quiz-api/pkg/ocp-quiz-api"
 )
 
@@ -22,7 +23,18 @@ func (s *api) CreateQuiz(ctx context.Context, req *ocp_quiz_api.CreateQuizV1Requ
 		Uint64("UserId", req.UserId).
 		Msg("CreateQuizV1")
 
-	return &ocp_quiz_api.CreateQuizV1Response{QuizId: 1}, nil
+	quiz := models.Quiz{
+		Id:          0,
+		ClassroomId: req.ClassroomId,
+		UserId:      req.UserId,
+		Link:        req.Link,
+	}
+	quizId, err := s.repo.AddEntity(ctx, quiz)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, err.Error())
+	}
+
+	return &ocp_quiz_api.CreateQuizV1Response{QuizId: quizId}, nil
 }
 
 func (s api) DescribeQuiz(ctx context.Context, req *ocp_quiz_api.DescribeQuizV1Request) (*ocp_quiz_api.DescribeQuizV1Response, error) {
@@ -34,11 +46,16 @@ func (s api) DescribeQuiz(ctx context.Context, req *ocp_quiz_api.DescribeQuizV1R
 		Uint64("id", req.QuizId).
 		Msg("DescribeQuizV1")
 
+	found, err := s.repo.DescribeEntity(ctx, req.QuizId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
 	return &ocp_quiz_api.DescribeQuizV1Response{Quiz: &ocp_quiz_api.Quiz{
-		Id:          1,
-		ClassroomId: 2,
-		UserId:      3,
-		Link:        "123",
+		Id:          found.Id,
+		ClassroomId: found.ClassroomId,
+		UserId:      found.UserId,
+		Link:        found.Link,
 	}}, nil
 }
 
@@ -52,21 +69,26 @@ func (s *api) ListQuiz(ctx context.Context, req *ocp_quiz_api.ListQuizV1Request)
 		Uint64("Offset", req.Offset).
 		Msg("ListQuizV1")
 
-	quizes := []*ocp_quiz_api.Quiz{{
-		Id:          1,
-		ClassroomId: 2,
-		UserId:      3,
-		Link:        "Link",
-	}}
+	quizes, _ := s.repo.ListEntities(ctx, req.Limit, req.Offset)
+
+	resp := make([]*ocp_quiz_api.Quiz, 0, len(quizes))
+
+	for _, r := range quizes {
+		resp = append(resp, &ocp_quiz_api.Quiz{
+			Id:          r.Id,
+			UserId:      r.UserId,
+			ClassroomId: r.ClassroomId,
+			Link:        r.Link,
+		})
+	}
 
 	return &ocp_quiz_api.ListQuizV1Response{
-		Quizes:      quizes,
-		CurrentPage: 1,
-		IsLast:      true,
+		Quizes:      resp,
+		CurrentPage: req.Offset,
 	}, nil
 }
 
-func (s *api) RemoveQuiz(ctc context.Context, req *ocp_quiz_api.RemoveQuizV1Request) (*ocp_quiz_api.RemoveQuizV1Response, error) {
+func (s *api) RemoveQuiz(ctx context.Context, req *ocp_quiz_api.RemoveQuizV1Request) (*ocp_quiz_api.RemoveQuizV1Response, error) {
 	if err := req.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -75,5 +97,7 @@ func (s *api) RemoveQuiz(ctc context.Context, req *ocp_quiz_api.RemoveQuizV1Requ
 		Uint64("Id", req.QuizId).
 		Msg("RemoveQuizV1")
 
-	return &ocp_quiz_api.RemoveQuizV1Response{Found: true}, nil
+	found := s.repo.RemoveEntity(ctx, req.QuizId)
+
+	return &ocp_quiz_api.RemoveQuizV1Response{Found: found}, nil
 }

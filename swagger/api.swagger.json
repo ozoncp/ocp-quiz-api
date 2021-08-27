@@ -203,9 +203,6 @@
         "current_page": {
           "type": "string",
           "format": "uint64"
-        },
-        "is_last": {
-          "type": "boolean"
         }
       },
       "title": "Response on paginate for List of Quizes\nQuizes - founded quizes\nCurrentPage - current page\nIsLast - is last page?"

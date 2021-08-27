@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
+	"golang.org/x/net/context"
 
 	"github.com/ozoncp/ocp-quiz-api/internal/mocks"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
@@ -18,11 +19,13 @@ var _ = Describe("Saver", func() {
 		timeout     time.Duration
 		entities    []models.Quiz
 		capacity    uint
+		ctx         context.Context
 	)
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockFlusher = mocks.NewMockFlusher(mockCtrl)
 		timeout = 100 * time.Millisecond
+		ctx = context.Background()
 
 		entities = []models.Quiz{
 			{1, 1, 41, "link_one"},
@@ -39,7 +42,7 @@ var _ = Describe("Saver", func() {
 	It("flushes all entities", func() {
 		capacity = uint(len(entities) / 2)
 		s = NewSaver(capacity, mockFlusher, timeout)
-		mockFlusher.EXPECT().Flush(gomock.Any()).MinTimes(1)
+		mockFlusher.EXPECT().Flush(ctx, gomock.Any()).MinTimes(1)
 		defer s.Close()
 		for _, entity := range entities {
 			s.Save(entity)
@@ -48,7 +51,7 @@ var _ = Describe("Saver", func() {
 	It("flushes all entities after close", func() {
 		capacity = 0
 		s = NewSaver(capacity, mockFlusher, timeout)
-		mockFlusher.EXPECT().Flush(entities).MinTimes(1)
+		mockFlusher.EXPECT().Flush(ctx, entities).MinTimes(1)
 		defer s.Close()
 		for _, entity := range entities {
 			s.Save(entity)
@@ -57,7 +60,7 @@ var _ = Describe("Saver", func() {
 	It("flushes all entities", func() {
 		capacity = uint(len(entities))
 		s = NewSaver(capacity, mockFlusher, timeout)
-		mockFlusher.EXPECT().Flush(gomock.Any()).MinTimes(1)
+		mockFlusher.EXPECT().Flush(ctx, gomock.Any()).MinTimes(1)
 		for _, entity := range entities {
 			s.Save(entity)
 		}
@@ -70,7 +73,7 @@ var _ = Describe("Saver", func() {
 	It("successfully stopped", func() {
 		capacity = uint(len(entities))
 		s = NewSaver(capacity, mockFlusher, timeout)
-		mockFlusher.EXPECT().Flush([]models.Quiz{}).Times(1)
+		mockFlusher.EXPECT().Flush(ctx, []models.Quiz{}).Times(1)
 		s.Close()
 		for _, entity := range entities {
 			s.Save(entity)
@@ -80,7 +83,7 @@ var _ = Describe("Saver", func() {
 		capacity = uint(len(entities))
 		timeout = time.Millisecond
 		s = NewSaver(capacity, mockFlusher, timeout)
-		mockFlusher.EXPECT().Flush(gomock.Any()).MinTimes(1)
+		mockFlusher.EXPECT().Flush(ctx, gomock.Any()).MinTimes(1)
 
 		for _, entity := range entities {
 			s.Save(entity)

@@ -4,6 +4,8 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/net/context"
+
 	"github.com/ozoncp/ocp-quiz-api/internal/flusher"
 	"github.com/ozoncp/ocp-quiz-api/internal/models"
 )
@@ -53,11 +55,12 @@ func NewSaver(cap uint, flusher flusher.Flusher, timeout time.Duration) Saver {
 func (s *saver) start() {
 	entities := make([]models.Quiz, 0, s.capacity)
 	s.wait.Add(1)
+	ctx := context.Background()
 	go func() {
 		defer func() {
 			s.ticker.Stop()
 			close(s.entity)
-			_, _ = s.flusher.Flush(entities)
+			_, _ = s.flusher.Flush(ctx, entities)
 			s.wait.Done()
 		}()
 		for {
@@ -65,7 +68,7 @@ func (s *saver) start() {
 			case <-s.close:
 				return
 			case <-s.ticker.C:
-				entities, _ = s.flusher.Flush(entities)
+				entities, _ = s.flusher.Flush(ctx, entities)
 			case entity := <-s.entity:
 				entities = append(entities, entity)
 			}

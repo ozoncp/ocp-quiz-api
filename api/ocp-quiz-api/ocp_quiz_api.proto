@@ -74,8 +74,8 @@ message DescribeQuizV1Response{
 // Limit - quizes on page
 // Offset - page number
 message ListQuizV1Request{
-  uint64 limit = 1 [(validate.rules).uint64.gt = 1];
-  uint64 offset = 2 [(validate.rules).uint64.gt = 1];
+  uint64 limit = 1 [(validate.rules).uint64.gte = 1];
+  uint64 offset = 2 [(validate.rules).uint64.gte = 0];
 }
 
 // Response on paginate for List of Quizes
@@ -85,12 +85,11 @@ message ListQuizV1Request{
 message  ListQuizV1Response{
   repeated Quiz quizes = 1;
   uint64 current_page = 2;
-  bool is_last = 3;
 }
 
 // Request on remove quiz by Id
 message RemoveQuizV1Request {
-  uint64 quiz_id = 1 [(validate.rules).uint64.gte = 0];
+  uint64 quiz_id = 1 [(validate.rules).uint64.gt = 0];
 }
 
 // Response on remove quiz
