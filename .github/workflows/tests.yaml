@@ -15,6 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Test
-        run: go test ./...  -coverprofile fmtcoverage.html fmt
+        run: go test ./...  -coverprofile coverage.txt -covermode=atomic
       - name: Coverage badge
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token:  ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.txt
+          flags: unittests
+          name: codecov-umbrella

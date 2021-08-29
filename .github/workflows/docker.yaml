@@ -1,7 +1,11 @@
 name: CI to Docker Hub
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows:
+      - "Test"
+    types:
+      - completed
+
 jobs:
 
   build:
@@ -29,7 +33,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ocp-quiz-api:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ocp-quiz-api:${{ steps.vars.outputs.sha_short }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

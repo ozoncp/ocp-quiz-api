@@ -4,3 +4,4 @@ bin/
 gen/
 pgdata/
 fmtcoverage.html
+coverage.txt
