@@ -17,13 +17,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Test
-        run: go test ./...  -coverprofile fmtcoverage.html fmt
+        run: go test ./...  -coverprofile fmtcoverage.html fmt && go tool cover -html=fmtcoverage.html -o coverage.html
 
       - name: Coverage artifacts
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report
-          path: fmtcoverage.html
+          path: |
+            fmtcoverage.html
+            coverage.html
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
