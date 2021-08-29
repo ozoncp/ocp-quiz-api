@@ -1,5 +1,6 @@
 name: CI to Docker Hub
 on:
+  pull_request: null
   workflow_run:
     workflows:
       - "Test"
