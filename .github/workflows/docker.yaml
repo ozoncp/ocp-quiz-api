@@ -31,10 +31,7 @@ jobs:
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
-      - name: Check outputs
-        run: echo ${{ steps.vars.outputs.sha_short }}
-
-      - name: echo new image
+      - name: Echo new image
         run: echo ${{ secrets.DOCKER_HUB_USERNAME }}/ocp-quiz-api:${{ steps.vars.outputs.sha_short }}
 
       - name: Build and push
