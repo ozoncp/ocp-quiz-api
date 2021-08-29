@@ -5,3 +5,4 @@ gen/
 pgdata/
 fmtcoverage.html
 coverage.txt
+coverage.html
