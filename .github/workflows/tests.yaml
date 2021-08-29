@@ -29,5 +29,6 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.29
+          skip-go-installation: true
           args: --issues-exit-code=0 # Игнорим ошибки, фиксить буду в рамках рефакторинга
           working-directory: internal
