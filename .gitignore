@@ -3,3 +3,6 @@ vendor.protogen
 bin/
 gen/
 pgdata/
+fmtcoverage.html
+coverage.txt
+coverage.html
